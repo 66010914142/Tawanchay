@@ -7,7 +7,7 @@
 
 <body>
 <h1>ข้อมูลจังหวัด -- ตะวันฉาย สวัสดิ์พาณิชย์(ซัน)</h1>
-<form method="post" action="">
+<form method="post" action="" enctype="multipart/form-data">
     ชื่อจังหวัด <input type="text" name="rname" autofocus require> <br>
     รูปภาพ <input type="file" name="pimage"> <br>
     ชื่อภาค
@@ -20,8 +20,25 @@
         ?>
         <option value="<?php echo $data3['r_id']; ?>"><?php echo $data3['r_name'];?></option>
         <?php } ?>
+        </select><br><br>
     <button type="submit" name="Submit"> บันทึก</button>
-        </select>
+    </form>
+        
+       <br>
+       <br>
+        <?php 
+		if(isset($_POST['Submit'])){
+        include_once("connectdb.php");
+		
+		$pname =$_POST['rname'];
+		$ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION);
+		$rid = $_POST['rid'];
+		
+        $sql2 = "INSERT INTO `provinces` VALUES (NULL, '{$pname}','{$ext}','{$rid}') ";
+		mysqli_query($conn,$sql2) or die ("INSERT ไม่ได้");
+		$pic_id = mysqli_insert_id($conn);
+		copy($_FILES['pimage']['tmp_name'],"images/".$pic_id.".".$ext);}
+        ?>
 <table border = 1>
     <tr>
         <th> รหัส</th>
@@ -30,14 +47,15 @@
         <th> ภาค </th>
     </tr>
 <?php 
+
 include_once("connectdb.php");
 
-$sql = "SELECT * FROM `provinces` AS p
-INNER JOIN `regions` AS r 
-ON p.r_id = r.r_id
-ORDER BY `p_id` ASC";
-$rs = mysqli_query($conn,$sql);
-while($data = mysqli_fetch_array($rs)){
+	$sql = "SELECT * FROM `provinces` AS p
+	INNER JOIN `regions` AS r 
+	ON p.r_id = r.r_id
+	ORDER BY `p_id` ASC";
+	$rs = mysqli_query($conn,$sql);
+	while($data = mysqli_fetch_array($rs)){
 
     ?>
     <tr>
